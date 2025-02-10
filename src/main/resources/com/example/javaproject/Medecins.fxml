@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<VBox spacing="10" alignment="CENTER">
+    <Label text="Bienvenue dans la section Médecins" style="-fx-font-size: 24px;"/>
+    <!-- Ajoutez ici d'autres éléments spécifiques à cette section -->
+</VBox>

@@ -1,0 +1,21 @@
+/* style.css */
+
+/* Style par défaut pour les boutons */
+.button {
+    -fx-background-color: #2f4f4f;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-pref-width: 200px;
+    -fx-padding: 10px;
+}
+
+/* Style pour le bouton sélectionné */
+.button.selected {
+    -fx-background-color: #1e90ff; /* Bleu */
+    -fx-text-fill: white;
+}
+
+/* Optionnel : vous pouvez aussi ajouter un effet au survol des boutons */
+.button:hover {
+    -fx-background-color: #3b6e6e; /* Légèrement plus clair que la couleur de fond */
+}
