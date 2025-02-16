@@ -18,7 +18,10 @@ import java.sql.SQLException;
 public class Laboratoires {
 
     @FXML
-    private TextField searchField;
+    private TextField searchField;  // Champ de recherche pour le nom
+
+    @FXML
+    private TextField searchAdresseField;  // Champ de recherche pour l'adresse
 
     @FXML
     private TableView<Laboratoire> tableView;
@@ -50,14 +53,25 @@ public class Laboratoires {
         // Filtrage des laboratoires en fonction de la recherche
         FilteredList<Laboratoire> filteredData = new FilteredList<>(laboratoiresList, b -> true);
 
+        // Filtrage par nom
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(laboratoire -> {
                 if (newValue == null || newValue.isEmpty()) {
-                    return true;
+                    return true;  // Retourne true si le champ de recherche est vide
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-                return laboratoire.getNom().toLowerCase().contains(lowerCaseFilter) ||
-                        laboratoire.getAdresse().toLowerCase().contains(lowerCaseFilter);
+                return laboratoire.getNom().toLowerCase().contains(lowerCaseFilter);  // Filtrage par nom
+            });
+        });
+
+        // Filtrage par adresse
+        searchAdresseField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(laboratoire -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;  // Retourne true si le champ de recherche pour l'adresse est vide
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                return laboratoire.getAdresse().toLowerCase().contains(lowerCaseFilter);  // Filtrage par adresse
             });
         });
 

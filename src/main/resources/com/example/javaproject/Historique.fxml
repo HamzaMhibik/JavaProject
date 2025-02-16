@@ -5,11 +5,10 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.javaproject.fxmlControllers.Historiques">
     <children>
         <VBox spacing="10" alignment="CENTER" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
-
-            <!-- Champ de recherche -->
-            <TextField fx:id="searchField" promptText="Rechercher un utilisateur..." />
-
-            <!-- TableView pour afficher l'historique -->
+            <HBox spacing="10">
+                <TextField fx:id="searchField" promptText="Rechercher un utilisateur..." />
+                <DatePicker fx:id="datePicker" promptText="Filtrer par date..." />
+            </HBox>
             <TableView fx:id="tableView" prefHeight="400" prefWidth="600">
                 <columns>
                     <TableColumn fx:id="columnId" text="ID" prefWidth="100" />

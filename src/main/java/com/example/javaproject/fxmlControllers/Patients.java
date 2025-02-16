@@ -16,7 +16,6 @@ import java.sql.SQLException;
 import java.io.IOException;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-
 public class Patients {
 
     @FXML
@@ -52,7 +51,16 @@ public class Patients {
     @FXML
     private TableColumn<Patient, Void> columnAction;
 
+    // Filter UI elements
+    @FXML
+    private TextField filterVille;
+    @FXML
+    private TextField filterAge;
+    @FXML
+    private ComboBox<String> filterSexe;
+
     private ObservableList<Patient> patientsList = FXCollections.observableArrayList();
+    private ObservableList<Patient> filteredList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -96,6 +104,9 @@ public class Patients {
                 };
             }
         });
+
+        // Set the items for the sexe filter combo box
+        filterSexe.setItems(FXCollections.observableArrayList("homme", "femme"));
     }
 
     private void loadPatients() {
@@ -118,7 +129,9 @@ public class Patients {
                         rs.getString("NomUtilisateur")
                 ));
             }
-            tableView.setItems(patientsList);
+
+            filteredList.setAll(patientsList);  // Show all initially
+            tableView.setItems(filteredList);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -135,6 +148,7 @@ public class Patients {
 
             if (affectedRows > 0) {
                 patientsList.remove(patient);
+                filteredList.remove(patient);  // Remove from filtered list as well
                 showAlert(Alert.AlertType.INFORMATION, "Patient supprimé", "Le patient a été supprimé avec succès.");
             } else {
                 showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de la suppression du patient.");
@@ -157,17 +171,10 @@ public class Patients {
     @FXML
     private void showAddPatientForm() {
         try {
-            // Load the FXML file for the AddPatient form
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javaproject/add_patient_form.fxml"));
             Parent root = loader.load();
-
-            // Get the controller of the AddPatient form
             AddPatientController addPatientController = loader.getController();
-
-            // Set the Patients controller in the AddPatientController
             addPatientController.setPatientsController(this);
-
-            // Create and show the new window
             Stage stage = new Stage();
             stage.setTitle("Add New Patient");
             stage.setScene(new Scene(root));
@@ -177,7 +184,22 @@ public class Patients {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue lors de l'ouverture du formulaire.");
         }
     }
-    // Inside Patients.java
+
+    // Filter the patients based on the entered criteria
+    @FXML
+    private void filterPatients() {
+        String cityFilter = filterVille.getText().toLowerCase();
+        String ageFilterText = filterAge.getText();
+        String sexeFilter = filterSexe.getValue();
+
+        filteredList.setAll(patientsList.filtered(patient -> {
+            boolean matchesCity = cityFilter.isEmpty() || patient.getVille().toLowerCase().contains(cityFilter);
+            boolean matchesAge = ageFilterText.isEmpty() || Integer.toString(patient.getAge()).contains(ageFilterText);
+            boolean matchesSexe = sexeFilter == null || patient.getSexe().equalsIgnoreCase(sexeFilter);
+
+            return matchesCity && matchesAge && matchesSexe;
+        }));
+    }
 
     public void addPatient(String nom, String prenom, String email, String telephone, String motdepasse, int age, String sexe, String ville, String nomUtilisateur) {
         String query = "INSERT INTO patients (Nom, Prenom, Email, Telephone, Motdepasse, Age, Sexe, Ville, NomUtilisateur) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -198,12 +220,11 @@ public class Patients {
             int affectedRows = stmt.executeUpdate();
 
             if (affectedRows > 0) {
-                // Retrieve the generated ID of the new patient
                 try (var generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        int newId = generatedKeys.getInt(1); // Get the generated ID (1 is the column index for the ID)
-                        // Add the new patient to the list1 with the generated ID
+                        int newId = generatedKeys.getInt(1);
                         patientsList.add(new Patient(newId, nom, prenom, email, telephone, motdepasse, age, sexe, ville, nomUtilisateur));
+                        filteredList.add(new Patient(newId, nom, prenom, email, telephone, motdepasse, age, sexe, ville, nomUtilisateur));
                         showAlert(Alert.AlertType.INFORMATION, "Patient ajouté", "Le patient a été ajouté avec succès.");
                     } else {
                         showAlert(Alert.AlertType.ERROR, "Erreur", "Le patient a été ajouté, mais l'ID généré n'a pas été récupéré.");
@@ -218,6 +239,4 @@ public class Patients {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue lors de l'ajout du patient.");
         }
     }
-
-
 }

@@ -13,8 +13,13 @@
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
 
-            <!-- Champ de recherche -->
-            <TextField fx:id="searchField" promptText="Rechercher un médecin..." maxWidth="300"/>
+            <!-- Champ de recherche par nom -->
+            <TextField fx:id="searchField" promptText="Rechercher un médecin par nom..." maxWidth="300"/>
+
+            <!-- Champs de filtrage -->
+            <TextField fx:id="filterVille" promptText="Filtrer par ville" onKeyReleased="#filterMedecins"/>
+            <TextField fx:id="filterAge" promptText="Filtrer par âge" onKeyReleased="#filterMedecins"/>
+            <ComboBox fx:id="filterSexe" promptText="Filtrer par sexe" onAction="#filterMedecins"/>
 
             <!-- Tableau des médecins -->
             <TableView fx:id="tableView" prefWidth="760">

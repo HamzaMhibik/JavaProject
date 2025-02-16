@@ -10,6 +10,10 @@
             prefHeight="500.0" prefWidth="800.0">
 
     <VBox spacing="10.0" alignment="CENTER">
+        <TextField fx:id="filterVille" promptText="Filtrer par ville" onKeyReleased="#filterPatients"/>
+        <TextField fx:id="filterAge" promptText="Filtrer par âge" onKeyReleased="#filterPatients"/>
+        <ComboBox fx:id="filterSexe" promptText="Filtrer par sexe" onAction="#filterPatients"/>
+
         <TableView fx:id="tableView" prefHeight="400.0" prefWidth="780.0">
             <columns>
                 <TableColumn fx:id="columnId" text="ID" prefWidth="50"/>

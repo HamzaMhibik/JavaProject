@@ -17,7 +17,10 @@ import java.sql.SQLException;
 public class Historiques {
 
     @FXML
-    private TextField searchField; // Ajout du champ de recherche
+    private TextField searchField;
+
+    @FXML
+    private DatePicker datePicker;
 
     @FXML
     private TableView<Historique> tableView;
@@ -32,18 +35,16 @@ public class Historiques {
     private TableColumn<Historique, String> columnDate;
 
     @FXML
-    private TableColumn<Historique, String> columnAction; // Colonne pour les actions (Delete)
+    private TableColumn<Historique, String> columnAction;
 
     private ObservableList<Historique> historiquesList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        // Initialisation des colonnes
         columnId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnUtilisateur.setCellValueFactory(new PropertyValueFactory<>("utilisateur"));
         columnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
-        // Colonne Action : Ajout d'un bouton pour supprimer l'historique
         columnAction.setCellFactory(new Callback<TableColumn<Historique, String>, TableCell<Historique, String>>() {
             @Override
             public TableCell<Historique, String> call(TableColumn<Historique, String> param) {
@@ -51,7 +52,6 @@ public class Historiques {
                     private final Button deleteButton = new Button("Delete");
 
                     {
-                        // Action du bouton Delete
                         deleteButton.setOnAction(event -> {
                             Historique selectedHistorique = getTableRow().getItem();
                             if (selectedHistorique != null) {
@@ -64,28 +64,48 @@ public class Historiques {
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty) {
-                            setGraphic(null); // Pas de bouton si la ligne est vide
+                            setGraphic(null);
                         } else {
-                            setGraphic(deleteButton); // Afficher le bouton Delete
+                            setGraphic(deleteButton);
                         }
                     }
                 };
             }
         });
 
-        // Charger les historiques depuis la base de données
         loadHistoriques();
 
-        // Ajouter la fonctionnalité de recherche
         FilteredList<Historique> filteredData = new FilteredList<>(historiquesList, b -> true);
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(historique -> {
-                if (newValue == null || newValue.isEmpty()) {
+                if ((newValue == null || newValue.isEmpty()) && datePicker.getValue() == null) {
                     return true;
                 }
-                String lowerCaseFilter = newValue.toLowerCase();
-                return historique.getUtilisateur().toLowerCase().contains(lowerCaseFilter);
+                String lowerCaseFilter = (newValue != null) ? newValue.toLowerCase() : "";
+                boolean matchesUser = historique.getUtilisateur().toLowerCase().contains(lowerCaseFilter);
+
+                if (datePicker.getValue() != null) {
+                    String selectedDate = datePicker.getValue().toString(); // Conversion de LocalDate en String (format yyyy-MM-dd)
+                    return matchesUser && historique.getDate().equals(selectedDate);
+                }
+                return matchesUser;
+            });
+        });
+
+        datePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(historique -> {
+                if ((searchField.getText() == null || searchField.getText().isEmpty()) && newValue == null) {
+                    return true;
+                }
+                String lowerCaseFilter = (searchField.getText() != null) ? searchField.getText().toLowerCase() : "";
+                boolean matchesUser = historique.getUtilisateur().toLowerCase().contains(lowerCaseFilter);
+
+                if (newValue != null) {
+                    String selectedDate = newValue.toString(); // Conversion de LocalDate en String (format yyyy-MM-dd)
+                    return matchesUser && historique.getDate().equals(selectedDate);
+                }
+                return matchesUser;
             });
         });
 

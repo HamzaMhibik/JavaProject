@@ -46,9 +46,16 @@ public class Medecins {
     private TableColumn<Medecin, Void> columnAction;
 
     @FXML
-    private TextField searchField;
+    private TextField filterVille;
+    @FXML
+    private TextField filterAge;
+    @FXML
+    private ComboBox<String> filterSexe;
+    @FXML
+    private TextField searchField; // Added for name search
 
     private ObservableList<Medecin> medecinsList = FXCollections.observableArrayList();
+    private ObservableList<Medecin> filteredList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -65,11 +72,14 @@ public class Medecins {
 
         columnAction.setCellFactory(createDeleteButtonCellFactory());
 
-        loadMedecins("");
+        filterSexe.setItems(FXCollections.observableArrayList("homme", "femme"));
 
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            loadMedecins(newValue);
-        });
+        loadMedecins();
+
+        filterVille.textProperty().addListener((observable, oldValue, newValue) -> filterMedecins());
+        filterAge.textProperty().addListener((observable, oldValue, newValue) -> filterMedecins());
+        filterSexe.valueProperty().addListener((observable, oldValue, newValue) -> filterMedecins());
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> filterMedecins()); // Listen for changes in the search field
     }
 
     private Callback<TableColumn<Medecin, Void>, TableCell<Medecin, Void>> createDeleteButtonCellFactory() {
@@ -97,12 +107,11 @@ public class Medecins {
         };
     }
 
-    private void loadMedecins(String filter) {
+    private void loadMedecins() {
         medecinsList.clear();
-        String query = "SELECT idmedecin, Nom, Prenom, Email, Telephone, Motdepasse, Age, Sexe, Ville, NomUtilisateur FROM medecins WHERE Nom LIKE ?";
+        String query = "SELECT idmedecin, Nom, Prenom, Email, Telephone, Motdepasse, Age, Sexe, Ville, NomUtilisateur FROM medecins";
         try (Connection conn = DatabaseConnection.connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, "%" + filter + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 medecinsList.add(new Medecin(
@@ -118,7 +127,8 @@ public class Medecins {
                         rs.getString("NomUtilisateur")
                 ));
             }
-            tableView.setItems(medecinsList);
+            filteredList.setAll(medecinsList);
+            tableView.setItems(filteredList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -132,6 +142,7 @@ public class Medecins {
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
                 medecinsList.remove(medecin);
+                filteredList.remove(medecin);
                 showAlert(Alert.AlertType.INFORMATION, "Médecin supprimé", "Le médecin a été supprimé avec succès.");
             } else {
                 showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de la suppression du médecin.");
@@ -140,6 +151,23 @@ public class Medecins {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue lors de la suppression.");
         }
+    }
+
+    @FXML
+    private void filterMedecins() {
+        String cityFilter = filterVille.getText().toLowerCase();
+        String ageFilterText = filterAge.getText();
+        String sexeFilter = filterSexe.getValue();
+        String searchText = searchField.getText().toLowerCase();
+
+        filteredList.setAll(medecinsList.filtered(medecin -> {
+            boolean matchesCity = cityFilter.isEmpty() || medecin.getVille().toLowerCase().contains(cityFilter);
+            boolean matchesAge = ageFilterText.isEmpty() || Integer.toString(medecin.getAge()).contains(ageFilterText);
+            boolean matchesSexe = sexeFilter == null || medecin.getSexe().equalsIgnoreCase(sexeFilter);
+            boolean matchesName = searchText.isEmpty() || medecin.getNom().toLowerCase().contains(searchText); // Name filter added
+
+            return matchesCity && matchesAge && matchesSexe && matchesName;
+        }));
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {

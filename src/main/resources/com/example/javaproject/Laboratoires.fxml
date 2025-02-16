@@ -13,8 +13,11 @@
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
 
-            <!-- Champ de recherche -->
+            <!-- Champ de recherche pour le nom -->
             <TextField fx:id="searchField" promptText="Rechercher un laboratoire..." maxWidth="300"/>
+
+            <!-- Champ de recherche pour l'adresse -->
+            <TextField fx:id="searchAdresseField" promptText="Rechercher par adresse..." maxWidth="300"/>
 
             <!-- Tableau des laboratoires -->
             <TableView fx:id="tableView" prefWidth="580">
@@ -31,3 +34,4 @@
         </VBox>
     </children>
 </AnchorPane>
+
