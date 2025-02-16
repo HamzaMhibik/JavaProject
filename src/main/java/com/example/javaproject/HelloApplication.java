@@ -9,7 +9,7 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("admin-dashboard.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 800, 600);  // Wider screen for dashboard
+        Scene scene = new Scene(fxmlLoader.load(), 900, 600);  // Wider screen for dashboard
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         stage.setTitle("Admin Dashboard");
         stage.setScene(scene);

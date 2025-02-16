@@ -38,10 +38,11 @@
 
     <!-- Main content area -->
     <center>
-        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 40;">
+        <VBox fx:id="center" alignment="CENTER" spacing="20" style="-fx-padding: 40;">
             <Label fx:id="welcomeText" text="Welcome to the Admin Dashboard" style="-fx-font-size: 24px;"/>
         </VBox>
     </center>
+
 
     <!-- Optional: Footer for additional info -->
 </BorderPane>

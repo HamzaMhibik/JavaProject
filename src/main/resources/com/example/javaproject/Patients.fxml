@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.Scene?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.javaproject.Patients"
-            prefHeight="400.0" prefWidth="600.0">
+            fx:controller="com.example.javaproject.fxmlControllers.Patients"
+            prefHeight="500.0" prefWidth="800.0">
+
+    <VBox spacing="10.0" alignment="CENTER">
+        <TableView fx:id="tableView" prefHeight="400.0" prefWidth="780.0">
+            <columns>
+                <TableColumn fx:id="columnId" text="ID" prefWidth="50"/>
+                <TableColumn fx:id="columnNom" text="Nom" prefWidth="100"/>
+                <TableColumn fx:id="columnPrenom" text="Prénom" prefWidth="100"/>
+                <TableColumn fx:id="columnEmail" text="Email" prefWidth="150"/>
+                <TableColumn fx:id="columnTelephone" text="Téléphone" prefWidth="100"/>
+                <TableColumn fx:id="columnMotdepasse" text="Mot de Passe" prefWidth="100"/>
+                <TableColumn fx:id="columnAge" text="Âge" prefWidth="50"/>
+                <TableColumn fx:id="columnSexe" text="Sexe" prefWidth="80"/>
+                <TableColumn fx:id="columnVille" text="Ville" prefWidth="120"/>
+                <TableColumn fx:id="columnNomUtilisateur" text="Nom Utilisateur" prefWidth="120"/>
+                <TableColumn fx:id="columnAction" text="Action" prefWidth="100"/>
+            </columns>
+        </TableView>
+
+        <Button text="Ajouter un Patient" onAction="#showAddPatientForm"/>
+    </VBox>
 
 </AnchorPane>

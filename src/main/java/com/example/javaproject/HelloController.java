@@ -59,23 +59,23 @@ public class HelloController {
     private void onDiscussionClick() {
         loadView("Discussion.fxml");
     }
-
     // Méthode pour charger un fichier FXML dans la zone centrale
     private void loadView(String fxmlFile) {
+        System.out.println("Valeur de center: " + center); // Débogage
+
         if (center != null) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
                 Parent root = loader.load();
-
-                center.getChildren().clear(); // Clear previous content
-                center.getChildren().add(root); // Add new content
+                center.getChildren().clear();
+                center.getChildren().add(root);
             } catch (IOException e) {
                 e.printStackTrace();
-                // Handle FXML loading errors
             }
         } else {
             System.out.println("Erreur : Le conteneur 'center' est null.");
         }
     }
+
 
 }

@@ -1,19 +1,18 @@
 package com.example.javaproject.fxmlControllers;
 
-public class Patient {
+public class Medecin {
     private int id;
     private String nom;
     private String prenom;
     private String email;
     private String telephone;
     private String motdepasse;
-    private int age;          // New field
-    private String sexe;      // New field
-    private String ville;     // New field
-    private String nomUtilisateur;  // New field
+    private int age;           // Nouveau champ
+    private String sexe;      // Nouveau champ
+    private String ville;     // Nouveau champ
+    private String nomUtilisateur;  // Nouveau champ
 
-    // Updated constructor
-    public Patient(int id, String nom, String prenom, String email, String telephone, String motdepasse, int age, String sexe, String ville, String nomUtilisateur) {
+    public Medecin(int id, String nom, String prenom, String email, String telephone, String motdepasse, int age, String sexe, String ville, String nomUtilisateur) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;

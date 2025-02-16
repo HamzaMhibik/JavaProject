@@ -1,14 +1,14 @@
 package com.example.javaproject.fxmlControllers;
 
-public class Discussion {
+public class Laboratoire {
     private int id;
     private String nom;
-    private String contenu;
+    private String adresse;
 
-    public Discussion(int id, String nom, String contenu) {
+    public Laboratoire(int id, String nom, String adresse) {
         this.id = id;
         this.nom = nom;
-        this.contenu = contenu;
+        this.adresse = adresse;
     }
 
     public int getId() {
@@ -19,7 +19,7 @@ public class Discussion {
         return nom;
     }
 
-    public String getContenu() {
-        return contenu;
+    public String getAdresse() {
+        return adresse;
     }
 }
