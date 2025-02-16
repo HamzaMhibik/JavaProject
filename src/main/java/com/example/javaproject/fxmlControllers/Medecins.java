@@ -24,31 +24,24 @@ public class Medecins {
 
     @FXML
     private TableColumn<Medecin, Integer> columnId;
-
     @FXML
     private TableColumn<Medecin, String> columnNom;
-
     @FXML
     private TableColumn<Medecin, String> columnPrenom;
-
     @FXML
     private TableColumn<Medecin, String> columnEmail;
-
     @FXML
     private TableColumn<Medecin, String> columnTelephone;
-
     @FXML
     private TableColumn<Medecin, String> columnMotdepasse;
-
     @FXML
-    private TableColumn<Medecin, Integer> columnAge;  // Nouvelle colonne pour l'âge
+    private TableColumn<Medecin, Integer> columnAge;
     @FXML
-    private TableColumn<Medecin, String> columnSexe; // Nouvelle colonne pour le sexe
+    private TableColumn<Medecin, String> columnSexe;
     @FXML
-    private TableColumn<Medecin, String> columnVille; // Nouvelle colonne pour la ville
+    private TableColumn<Medecin, String> columnVille;
     @FXML
-    private TableColumn<Medecin, String> columnNomUtilisateur; // Nouvelle colonne pour le nom d'utilisateur
-
+    private TableColumn<Medecin, String> columnNomUtilisateur;
     @FXML
     private TableColumn<Medecin, Void> columnAction;
 
@@ -70,39 +63,38 @@ public class Medecins {
         columnVille.setCellValueFactory(new PropertyValueFactory<>("ville"));
         columnNomUtilisateur.setCellValueFactory(new PropertyValueFactory<>("nomUtilisateur"));
 
-        columnAction.setCellFactory(new Callback<TableColumn<Medecin, Void>, javafx.scene.control.TableCell<Medecin, Void>>() {
-            @Override
-            public javafx.scene.control.TableCell<Medecin, Void> call(TableColumn<Medecin, Void> param) {
-                return new javafx.scene.control.TableCell<Medecin, Void>() {
-                    private final Button deleteButton = new Button("Delete");
-
-                    {
-                        deleteButton.setOnAction(event -> {
-                            Medecin selectedMedecin = getTableRow().getItem();
-                            if (selectedMedecin != null) {
-                                deleteMedecin(selectedMedecin);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            setGraphic(deleteButton);
-                        }
-                    }
-                };
-            }
-        });
+        columnAction.setCellFactory(createDeleteButtonCellFactory());
 
         loadMedecins("");
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             loadMedecins(newValue);
         });
+    }
+
+    private Callback<TableColumn<Medecin, Void>, TableCell<Medecin, Void>> createDeleteButtonCellFactory() {
+        return param -> new TableCell<>() {
+            private final Button deleteButton = new Button("Supprimer");
+
+            {
+                deleteButton.setOnAction(event -> {
+                    Medecin selectedMedecin = getTableRow().getItem();
+                    if (selectedMedecin != null) {
+                        deleteMedecin(selectedMedecin);
+                    }
+                });
+            }
+
+            @Override
+            public void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(deleteButton);
+                }
+            }
+        };
     }
 
     private void loadMedecins(String filter) {
@@ -136,10 +128,8 @@ public class Medecins {
         String query = "DELETE FROM medecins WHERE idmedecin = ?";
         try (Connection conn = DatabaseConnection.connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-
             stmt.setInt(1, medecin.getId());
             int affectedRows = stmt.executeUpdate();
-
             if (affectedRows > 0) {
                 medecinsList.remove(medecin);
                 showAlert(Alert.AlertType.INFORMATION, "Médecin supprimé", "Le médecin a été supprimé avec succès.");
@@ -159,10 +149,10 @@ public class Medecins {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
     @FXML
     private void openAddMedecinForm() {
         try {
-            // Charger le formulaire d'ajout
             Stage addMedecinStage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javaproject/add_medecin.fxml"));
             AnchorPane root = loader.load();
@@ -175,5 +165,4 @@ public class Medecins {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le formulaire d'ajout.");
         }
     }
-
 }

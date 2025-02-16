@@ -1,13 +1,14 @@
 package com.example.javaproject.fxmlControllers;
 
 import com.example.javaproject.DatabaseConnection;
+import com.example.javaproject.fxmlControllers.Article;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -16,25 +17,27 @@ public class AddArticle {
 
     @FXML
     private TextField titreField;
+    @FXML
+    private TextArea descriptionField;
+
+    private Articles articlesController;  // Champ pour stocker la référence au contrôleur Articles
+
+    // Méthode pour initialiser le contrôleur Articles
+    public void setArticlesController(Articles articlesController) {
+        this.articlesController = articlesController;
+    }
 
     @FXML
-    private TextField descriptionField;
-
-    @FXML
-    private Button saveButton;
-
-    // Cette méthode est appelée lorsque l'utilisateur clique sur le bouton "Enregistrer"
-    public void saveArticle() {
+    private void confirmAddArticle() {
         String titre = titreField.getText();
         String description = descriptionField.getText();
 
-        // Vérifier que les champs ne sont pas vides
+        // Vérifier si les champs sont remplis
         if (titre.isEmpty() || description.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Tous les champs doivent être remplis.");
+            showAlert(Alert.AlertType.WARNING, "Champs manquants", "Veuillez remplir tous les champs.");
             return;
         }
 
-        // Requête pour insérer un nouvel article dans la base de données
         String query = "INSERT INTO articles (Titre, Description) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -45,19 +48,16 @@ public class AddArticle {
             int affectedRows = stmt.executeUpdate();
 
             if (affectedRows > 0) {
-                // Afficher un message de succès
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "L'article a été ajouté avec succès.");
+                showAlert(Alert.AlertType.INFORMATION, "Article ajouté", "L'article a été ajouté avec succès.");
+                // Fermer la fenêtre
+                closeWindow();
 
-                // Appeler la méthode pour recharger la liste des articles dans Articles
-                Articles articlesController = getArticlesController();
+                // Rafraîchir la liste des articles dans le contrôleur principal
                 if (articlesController != null) {
-                    articlesController.loadArticles();  // Recharger les articles
+                    articlesController.loadArticles();
                 }
-
-                // Fermer la fenêtre d'ajout (facultatif)
-                saveButton.getScene().getWindow().hide();
             } else {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue lors de l'ajout de l'article.");
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de l'ajout de l'article.");
             }
 
         } catch (SQLException e) {
@@ -66,19 +66,16 @@ public class AddArticle {
         }
     }
 
-    // Fonction pour récupérer le contrôleur de la vue des articles
-    private Articles getArticlesController() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javaproject/articles.fxml"));
-        try {
-            loader.load();
-            return loader.getController();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    @FXML
+    private void handleCancel() {
+        closeWindow();
     }
 
-    // Fonction pour afficher une alerte
+    private void closeWindow() {
+        Stage stage = (Stage) titreField.getScene().getWindow();
+        stage.close();
+    }
+
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

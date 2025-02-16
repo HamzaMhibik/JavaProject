@@ -2,6 +2,7 @@ package com.example.javaproject.fxmlControllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -23,61 +24,76 @@ public class AddPatientController {
     private TextField motdepasseField;
 
     @FXML
-    private TextField ageField;           // New field for Age
+    private TextField ageField;           // Nouveau champ pour l'âge
     @FXML
-    private TextField sexeField;          // New field for Sexe
+    private ComboBox<String> sexeComboBox;  // Utilisation de ComboBox pour le sexe
     @FXML
-    private TextField villeField;         // New field for Ville
+    private TextField villeField;         // Nouveau champ pour la ville
     @FXML
-    private TextField nomUtilisateurField; // New field for NomUtilisateur
+    private TextField nomUtilisateurField; // Nouveau champ pour le nom d'utilisateur
 
     private Patients patientsController;
 
-    // Method to set the Patients controller in this controller
+    // Méthode pour définir le contrôleur Patients dans ce contrôleur
     public void setPatientsController(Patients patientsController) {
         this.patientsController = patientsController;
     }
 
     @FXML
+    private void initialize() {
+        // Initialiser le ComboBox avec les options de sexe
+        sexeComboBox.getItems().addAll("Homme", "Femme");
+    }
+
+    @FXML
     private void confirmAddPatient() {
-        // Get the values from the text fields
+        // Récupérer les valeurs des champs du formulaire
         String nom = nomField.getText();
         String prenom = prenomField.getText();
         String email = emailField.getText();
         String telephone = telephoneField.getText();
         String motdepasse = motdepasseField.getText();
         String ageText = ageField.getText();
-        String sexe = sexeField.getText();
+        String sexe = sexeComboBox.getValue();  // Utilisation du ComboBox pour le sexe
         String ville = villeField.getText();
         String nomUtilisateur = nomUtilisateurField.getText();
 
-        // Validate the age field is an integer
+        // Valider que tous les champs sont remplis
+        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || telephone.isEmpty() || motdepasse.isEmpty() ||
+                ageText.isEmpty() || sexe == null || ville.isEmpty() || nomUtilisateur.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Champs manquants", "Veuillez remplir tous les champs.");
+            return;
+        }
+
+        // Valider que l'âge est un nombre entier
         int age = 0;
         try {
             age = Integer.parseInt(ageText);
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "L'âge doit être un nombre entier.");
-            return;  // Stop if the age is invalid
-        }
-
-        // Check if all fields are filled in
-        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || telephone.isEmpty() || motdepasse.isEmpty() ||
-                ageText.isEmpty() || sexe.isEmpty() || ville.isEmpty() || nomUtilisateur.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champs manquants", "Veuillez remplir tous les champs.");
             return;
         }
 
-        // If the patientsController is not null, add the patient to the list and the database
+        // Si le contrôleur Patients est défini, ajouter le patient à la liste et à la base de données
         if (patientsController != null) {
             patientsController.addPatient(nom, prenom, email, telephone, motdepasse, age, sexe, ville, nomUtilisateur);
         }
 
-        // Close the window after adding the patient
+        // Fermer la fenêtre après l'ajout
         Stage stage = (Stage) nomField.getScene().getWindow();
         stage.close();
     }
 
-    // Method to show an alert dialog with the given type, title, and message
+
+    // Méthode pour gérer l'annulation
+    @FXML
+    private void handleCancel() {
+        // Fermer la fenêtre sans rien faire
+        Stage stage = (Stage) nomField.getScene().getWindow();
+        stage.close();
+    }
+
+    // Méthode pour afficher une alerte avec le type, le titre et le message donnés
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

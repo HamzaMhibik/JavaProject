@@ -1,4 +1,5 @@
 package com.example.javaproject.fxmlControllers;
+
 import javafx.scene.control.cell.PropertyValueFactory;
 import com.example.javaproject.DatabaseConnection;
 import javafx.collections.FXCollections;
@@ -38,12 +39,15 @@ public class Laboratoires {
 
     @FXML
     public void initialize() {
+        // Configuration des colonnes de la table
         columnId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         columnAdresse.setCellValueFactory(new PropertyValueFactory<>("adresse"));
 
+        // Charger les laboratoires depuis la base de données
         loadLaboratoires();
 
+        // Filtrage des laboratoires en fonction de la recherche
         FilteredList<Laboratoire> filteredData = new FilteredList<>(laboratoiresList, b -> true);
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -57,11 +61,37 @@ public class Laboratoires {
             });
         });
 
+        // Trier les résultats filtrés
         SortedList<Laboratoire> sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(tableView.comparatorProperty());
         tableView.setItems(sortedData);
+
+        // Ajouter le bouton de suppression à chaque ligne
+        columnAction.setCellFactory(param -> new TableCell<>() {
+            private final Button deleteButton = new Button("Delete");
+
+            {
+                deleteButton.setOnAction(event -> {
+                    Laboratoire selectedLaboratoire = getTableRow().getItem();
+                    if (selectedLaboratoire != null) {
+                        deleteLaboratoire(selectedLaboratoire);
+                    }
+                });
+            }
+
+            @Override
+            public void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(deleteButton);
+                }
+            }
+        });
     }
 
+    // Charger les laboratoires depuis la base de données
     private void loadLaboratoires() {
         String query = "SELECT idlaboratoire, Nom, Adresse FROM laboratoires";
         try (Connection conn = DatabaseConnection.connect();
@@ -76,10 +106,42 @@ public class Laboratoires {
         }
     }
 
+    // Méthode pour supprimer un laboratoire
+    private void deleteLaboratoire(Laboratoire laboratoire) {
+        String query = "DELETE FROM laboratoires WHERE idlaboratoire = ?";
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, laboratoire.getId());
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                laboratoiresList.remove(laboratoire);
+                showAlert(Alert.AlertType.INFORMATION, "Laboratoire Supprimé", "Le laboratoire a été supprimé avec succès.");
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Échec de la suppression du laboratoire.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue lors de la suppression.");
+        }
+    }
+
+    // Afficher une alerte pour informer l'utilisateur
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    // Ouvrir le formulaire pour ajouter un laboratoire
     @FXML
     private void openAddLaboratoireForm() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javaproject/addLaboratoire.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/javaproject/add_laboratoire_form.fxml"));
             Stage stage = new Stage();
             stage.setScene(new javafx.scene.Scene(loader.load()));
             stage.setTitle("Ajouter un laboratoire");

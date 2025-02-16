@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.javaproject.Laboratoires"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.javaproject.fxmlControllers.Laboratoires">
 
+    <children>
+        <VBox spacing="10" alignment="TOP_CENTER" prefWidth="600" prefHeight="400">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <!-- Champ de recherche -->
+            <TextField fx:id="searchField" promptText="Rechercher un laboratoire..." maxWidth="300"/>
+
+            <!-- Tableau des laboratoires -->
+            <TableView fx:id="tableView" prefWidth="580">
+                <columns>
+                    <TableColumn fx:id="columnId" text="ID" prefWidth="50"/>
+                    <TableColumn fx:id="columnNom" text="Nom" prefWidth="200"/>
+                    <TableColumn fx:id="columnAdresse" text="Adresse" prefWidth="250"/>
+                    <TableColumn fx:id="columnAction" text="Action" prefWidth="80"/>
+                </columns>
+            </TableView>
+
+            <!-- Bouton pour ajouter un laboratoire -->
+            <Button text="Ajouter un laboratoire" onAction="#openAddLaboratoireForm"/>
+        </VBox>
+    </children>
 </AnchorPane>

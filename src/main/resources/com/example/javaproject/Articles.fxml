@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.javaproject.Articles"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.javaproject.fxmlControllers.Articles">
 
+    <children>
+        <VBox spacing="10" alignment="TOP_CENTER" prefWidth="600" prefHeight="400">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <!-- Champ de recherche -->
+            <TextField fx:id="searchField" promptText="Rechercher un article..." maxWidth="300"/>
+
+            <!-- Tableau des articles -->
+            <TableView fx:id="tableView" prefWidth="580">
+                <columns>
+                    <TableColumn fx:id="columnId" text="ID" prefWidth="50"/>
+                    <TableColumn fx:id="columnTitre" text="Titre" prefWidth="200"/>
+                    <TableColumn fx:id="columnDescription" text="Description" prefWidth="250"/>
+                    <TableColumn fx:id="columnAction" text="Action" prefWidth="80"/>
+                </columns>
+            </TableView>
+
+            <!-- Bouton pour ajouter un article -->
+            <Button text="Ajouter un article" onAction="#openAddArticleWindow"/>
+        </VBox>
+    </children>
 </AnchorPane>
